@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/photo">
+        <file>resource/1d7ea17466c0f1a99e48444c54ce232c.jpg</file>
+        <file>resource/5f8746da367ee907b5aefe6485fdcc74.jpeg</file>
+        <file>resource/e6c46b78b40b8596d78c3ee3f66afaef.jpg</file>
+    </qresource>
+</RCC>
