@@ -160,7 +160,8 @@ void Widget::send_data(char* buffer) {
 }
 
 void Widget::recv_data() {
-    //可能需要槽函数来处理消息
+    if(!flag) return;
+
     char buffer[24];
     memset(buffer, 0, sizeof(buffer));
 
@@ -168,13 +169,16 @@ void Widget::recv_data() {
     while(total < 24) {
         int ret = sock->read(buffer + total, sizeof(buffer) - total);
         if(ret == -1) {
-            QMessageBox::information(this, "disconnect", "connect err");
+            QMessageBox::information(this, QString::fromLocal8Bit("连接断开"), QString::fromLocal8Bit("对方断开连接，bye bye"));
+            flag = false;
+            return;
         } else if(ret > 0) {
             total += ret;
         } else {
             if(!sock->waitForReadyRead(200)) {
-                QMessageBox::information(this, "disconnect", "connect err");
-                break;
+                QMessageBox::information(this, QString::fromLocal8Bit("连接断开"), QString::fromLocal8Bit("对方断开连接，bye bye"));
+                flag = false;
+                return;
             }
         }
     }
@@ -188,7 +192,7 @@ void Widget::recv_data() {
     } else if(re == 2) {
         show_collect_moisture(moisture);
     } else {
-        QMessageBox::information(this, "err", "data err");
+        QMessageBox::information(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("数据格式错误"));
     }
 }
 
@@ -218,10 +222,10 @@ void Widget::on_config_button_clicked()
 //    sprintf(buffer, "*10t:%d&h:%d$", temp, humd);                  //*10 is config dht11
 
     int moisture = ui->config_moisture->text().toInt();
-    if(moisture > 99 || moisture < 0) {
-        moisture = 0;
-        ui->config_moisture->setText(QString::number(moisture));
-    }
+//    if(moisture > 99 || moisture < 0) {
+//        moisture = 0;
+//        ui->config_moisture->setText(QString::number(moisture));
+//    }
     sprintf(buffer, "*11m:%02d$", moisture);                         //*11 is config 土壤湿度传感器的阈值
 
     sock->write(buffer,sizeof(buffer));
@@ -232,12 +236,14 @@ void Widget::on_config_button_clicked()
         int ret = sock->read(recv_buffer + total, sizeof(recv_buffer) - total);
         if(ret == -1) {
             QMessageBox::information(this, QString::fromLocal8Bit("配置"), QString::fromLocal8Bit("我还没有连接，请连接！"));
+            flag = false;
             return;
         } else if(ret > 0) {
             total += ret;
         } else {
             if(!sock->waitForReadyRead(200)) {
                 QMessageBox::information(this, QString::fromLocal8Bit("配置"), QString::fromLocal8Bit("我还没有连接，请连接！"));
+                flag = false;
                 return;
             }
         }
