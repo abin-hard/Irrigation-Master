@@ -33,6 +33,9 @@ Widget::Widget(QWidget *parent)
     ui->lcdNumber_4->setDigitCount(5);
     ui->lcdNumber_4->setMode(QLCDNumber::Dec);
 
+    window_init();
+    setWindowIcon(QIcon(":/photo/resource/sun.png"));
+    setWindowFlags(windowFlags() & ~Qt::WindowMaximizeButtonHint);
 }
 
 
@@ -197,8 +200,7 @@ void Widget::show_collect_data(QString temp, QString humd) {
 }
 
 void Widget::show_collect_illumination(QString data) {
-    data = data + " lx";
-    ui->illumination_brow->setText(data);
+//    ui->illumination_brow->setText(data);
     ui->lcdNumber_4->display(data);
 }
 
@@ -216,6 +218,10 @@ void Widget::on_config_button_clicked()
 //    sprintf(buffer, "*10t:%d&h:%d$", temp, humd);                  //*10 is config dht11
 
     int moisture = ui->config_moisture->text().toInt();
+    if(moisture > 99 || moisture < 0) {
+        moisture = 0;
+        ui->config_moisture->setText(QString::number(moisture));
+    }
     sprintf(buffer, "*11m:%02d$", moisture);                         //*11 is config 土壤湿度传感器的阈值
 
     sock->write(buffer,sizeof(buffer));
@@ -285,4 +291,30 @@ void Widget::on_auto_water_button_clicked()
         ui->auto_water_button->setText(QString::fromLocal8Bit("自动"));
     }
 }
+
+
+void Widget::window_init() {
+    file_menu = new QMenu(this);
+    file_menu->addAction(QString::fromLocal8Bit("打开文件"));
+    file_menu->addAction(QString::fromLocal8Bit("关闭文件"));
+
+    setting_menu = new QMenu(this);
+    setting_menu->addAction(QString::fromLocal8Bit("退出"));
+
+    help_menu = new QMenu(this);
+    help_menu->addAction(QString::fromLocal8Bit("使用文档"));
+    help_menu->addAction(QString::fromLocal8Bit("版本"));
+
+    ui->file_button->setMenu(file_menu);
+    ui->setting_button->setMenu(setting_menu);
+    ui->help_button->setMenu(help_menu);
+}
+
+
+
+
+
+
+
+
 

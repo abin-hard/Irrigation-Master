@@ -5,6 +5,7 @@
 #include <QTcpServer>
 #include <qtcpsocket.h>
 #include <QTimer>
+#include <QMenu>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -52,6 +53,12 @@ private:
     void show_collect_illumination(QString);
 
     void show_collect_moisture(QString);
+
+private:
+    void window_init();
+    QMenu* file_menu;
+    QMenu* setting_menu;
+    QMenu* help_menu;
 
 };
 #endif // WIDGET_H
